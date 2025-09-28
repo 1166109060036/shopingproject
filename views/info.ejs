@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>กรอกข้อมูลส่วนบุคคล</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: url('https://cdn.outsideonline.com/wp-content/uploads/2020/11/19/cyclist-lens-flare_h.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 480px;
+      backdrop-filter: blur(10px) saturate(180%);
+      -webkit-backdrop-filter: blur(10px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+      animation: float 6s ease-in-out infinite;
+    }
+
+
+    h2 {
+      color: #fff;
+      font-weight: bold;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    input.form-control {
+      background: rgba(255, 255, 255, 0.3);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      padding: 0.8rem;
+    }
+
+    input.form-control::placeholder {
+      color: rgba(0, 0, 0, 0.7);
+    }
+
+    .btn-primary {
+      border-radius: 12px;
+      padding: 0.8rem;
+      background: linear-gradient(135deg, #8d8d8d, #ffffff);
+      border: none;
+      font-weight: bold;
+      color: #000;
+      transition: 0.3s;
+    }
+
+    .btn-primary:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .error {
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      background: rgba(255, 0, 0, 0.4);
+      color: #fff;
+      border: none;
+      padding: 8px;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .hidden { display: none; }
+
+    p, a {
+      color: #ffffff !important;
+      text-shadow: 0 1px 5px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="glass-card">
+    <h2>กรอกข้อมูลส่วนบุคคล</h2>
+
+    <% if (typeof error !== 'undefined') { %>
+      <div class="alert alert-danger text-center"><%= error %></div>
+    <% } %>
+
+    <form id="infoForm" action="/info" method="POST">
+      <div class="mb-3">
+        <input type="text" name="fullname" id="fullname" class="form-control" placeholder="ชื่อ-นามสกุล" required>
+      </div>
+      <div class="mb-3">
+        <input type="text" name="address" id="address" class="form-control" placeholder="ที่อยู่" required>
+      </div>
+      <div class="mb-3">
+        <input type="text" name="phone" id="phone" class="form-control" placeholder="เบอร์โทร" required>
+      </div>
+
+      <input type="hidden" name="role" value="user">
+      <div id="errorMsg" class="error hidden"></div>
+
+      <div class="d-grid">
+        <button id="submitbtn" type="submit" class="btn btn-primary">บันทึกข้อมูล</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('infoForm');
+    const fullname = document.getElementById('fullname');
+    const address = document.getElementById('address');
+    const phone = document.getElementById('phone');
+    const errorMsg = document.getElementById('errorMsg');
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const fullName = fullname.value;
+      const addressValue = address.value;
+      const phoneValue = phone.value;
+
+      errorMsg.classList.add('hidden');
+
+      const data = { fullname: fullName, address: addressValue, phone: phoneValue };
+
+      try {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch('/info', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          window.location.href = '/';
+        } else {
+          errorMsg.textContent = result.error || 'เกิดข้อผิดพลาด';
+          errorMsg.classList.remove('hidden');
+        }
+      } catch (err) {
+        errorMsg.textContent = 'เกิดข้อผิดพลาดจากระบบ';
+        errorMsg.classList.remove('hidden');
+      }
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

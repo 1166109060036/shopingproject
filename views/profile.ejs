@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ข้อมูลผู้ใช้ | CyloCity</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    body {
+      font-family: "Prompt", sans-serif;
+      background: linear-gradient(135deg, #f0f0f0, #d6d6d6);
+      color: #333;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: rgba(123, 0, 0, 0.805) !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .navbar-nav .nav-link {
+      color: white !important;
+      font-weight: 500;
+    }
+    .navbar-nav .nav-link:hover {
+      color: #ffe6e6 !important;
+    }
+
+    /* Card */
+    .card {
+      max-width: 600px;
+      margin: auto;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      border: none;
+    }
+    .card-header {
+      border-radius: 20px 20px 0 0;
+      background: rgba(160, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    .card-body {
+      padding: 30px;
+    }
+    .info-line {
+      margin-bottom: 15px;
+      font-size: 1rem;
+    }
+    .info-line strong {
+      color: #a00000;
+    }
+
+    /* ปุ่ม */
+    .btn-primary {
+      background: rgba(160, 0, 0, 0.85);
+      border: none;
+      border-radius: 12px;
+      backdrop-filter: blur(6px);
+      padding: 10px 20px;
+      font-weight: 500;
+    }
+    .btn-primary:hover {
+      background: rgba(200, 0, 0, 1);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg p-3 fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand text-white fw-bold" href="/products">CyloCity</a>
+      <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link" href="/products">สินค้า</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/profile">ข้อมูลส่วนตัว</a></li>
+          <li class="nav-item"><a class="nav-link" href="/carts">ตะกร้าสินค้า</a></li>
+          <li class="nav-item"><a class="nav-link" href="/myorders">คำสั่งซื้อของฉัน</a></li>
+          <li class="nav-item" style="display: none;" id="dashboard-link">
+            <a class="nav-link" href="/dashboard">Dashboard</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Content -->
+  <div class="container mt-5 pt-5">
+    <div class="card shadow">
+      <div class="card-header text-center text-white">
+        ข้อมูลผู้ใช้
+      </div>
+      <div class="card-body">
+        <div class="info-line"><strong>อีเมล:</strong> <span id="user-email" class="text-muted"></span></div>
+        <div class="info-line"><strong>ชื่อผู้ใช้:</strong> <span id="user-username" class="text-muted"></span></div>
+        <div class="info-line"><strong>ชื่อเต็ม:</strong> <span id="user-fullname" class="text-muted"></span></div>
+        <div class="info-line"><strong>ที่อยู่:</strong> <span id="user-address" class="text-muted"></span></div>
+        <div class="info-line"><strong>เบอร์โทร:</strong> <span id="user-phone" class="text-muted"></span></div>
+      </div>
+      <div class="card-footer text-center bg-transparent border-0">
+        <a href="/reinfo" class="btn btn-primary">แก้ไขข้อมูลส่วนตัว</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const userId = localStorage.getItem('userId');
+      const userRole = localStorage.getItem('userRole');
+
+      if (userRole === 'admin') {
+        document.getElementById('dashboard-link').style.display = 'inline';
+      }
+
+      if (!userId) {
+        document.getElementById('user-email').textContent = "ไม่พบผู้ใช้";
+        return;
+      }
+
+      fetch('/profile/get-user-info', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId })
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('user-email').textContent = data.email || "ไม่พบอีเมล";
+        document.getElementById('user-username').textContent = data.username || "ไม่พบชื่อผู้ใช้";
+        document.getElementById('user-fullname').textContent = data.fullname || "ไม่พบชื่อเต็ม";
+        document.getElementById('user-address').textContent = data.address || "ไม่พบที่อยู่";
+        document.getElementById('user-phone').textContent = data.phone || "ไม่พบเบอร์โทร";
+      })
+      .catch(err => {
+        console.error('เกิดข้อผิดพลาด:', err);
+        document.getElementById('user-email').textContent = "โหลดข้อมูลไม่สำเร็จ";
+      });
+    });
+  </script>
+</body>
+</html>

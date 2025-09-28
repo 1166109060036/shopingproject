@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= title %></title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="mb-4"><%= title %></h1>
+    <a href="/products" class="btn btn-outline-secondary m-3">ย้อนกลับ</a>
+    <% if (!cartItems || cartItems.length === 0) { %>
+      <div class="alert alert-info">ตะกร้าว่างเปล่า</div>
+      <a href="/products" class="btn btn-primary">กลับไปเลือกซื้อสินค้า</a>
+    <% } else { %>
+      <form id="checkoutForm" action="/checkout" method="POST" enctype="multipart/form-data">
+        <table class="table table-bordered align-middle text-center">
+          <thead class="table-light">
+            <tr>
+              <th>เลือก</th>
+              <th>รูปภาพ</th>
+              <th>ชื่อสินค้า</th>
+              <th>จำนวน</th>
+              <th>ราคา/หน่วย (บาท)</th>
+              <th>ราคารวม (บาท)</th>
+              <th>จัดการ</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+            <% let totalPrice = 0; %>
+            <% cartItems.forEach(item => { %>
+              <% 
+                const priceNum = Number(item.price);
+                const itemTotal = priceNum * item.cart_quantity; 
+                totalPrice += itemTotal; 
+              %>
+              <tr>
+                <td>
+                 <input 
+                    type="checkbox" 
+                    name="selectedItems[]" 
+                    value="<%= item.cart_id %>" 
+                    class="item-checkbox" 
+                    data-price="<%= (Number(item.price) * item.cart_quantity).toFixed(2) %>"
+                    data-quantity="<%= item.cart_quantity %>"
+                    data-product-id="<%= item.product_id %>" 
+                  />
+                </td>
+                <td style="width: 100px;">
+                  <% if (item.image) { %>
+                    <img src="<%= item.image %>" alt="<%= item.product_name %>" class="img-fluid" style="max-height: 80px;" />
+                  <% } else { %>
+                    ไม่มีรูป
+                  <% } %>
+                </td>
+                <td><%= item.product_name %></td>
+                <td><%= item.cart_quantity %></td>
+                <td><%= priceNum.toFixed(2) %></td>
+                <td><%= itemTotal.toFixed(2) %></td>
+                <td>
+                  <form action="/carts/delete/<%= item.cart_id %>" method="POST" onsubmit="return confirm('คุณแน่ใจหรือว่าต้องการลบสินค้านี้?');">
+                    <button type="submit" class="btn btn-danger btn-sm">ลบ</button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+          <tfoot>
+            <tr>
+              <th colspan="5" class="text-end">ราคารวมสินค้าที่เลือก</th>
+              <th colspan="2"><span id="totalSelectedPrice">0.00</span> บาท</th>
+            </tr>
+          </tfoot>
+        </table>
+
+        <div id="paymentSection" class="mt-4" style="display: none;">
+          <h5>โอนเงินไปที่เลขบัญชี: <strong>211-076-2691 ธนาคารกรุงไทย</strong></h5>
+          <div class="mb-3">
+            <label for="paymentSlip" class="form-label">แนบสลิปการชำระเงิน:</label>
+            <input type="file" name="paymentSlip" id="paymentSlip" class="form-control" accept="public/images/*" required>
+          </div>
+          <button type="submit" class="btn btn-success">ชำระเงิน</button>
+        </div>
+
+      </form>
+    <% } %>
+  </div>
+
+  <script>
+    const checkboxes = document.querySelectorAll('.item-checkbox');
+    const form = document.getElementById('checkoutForm');
+
+    function togglePaymentSectionAndTotal() {
+      let total = 0;
+      let anyChecked = false;
+
+      // เคลียร์ hidden inputs เก่า
+      document.querySelectorAll('.dynamic-hidden').forEach(e => e.remove());
+
+      checkboxes.forEach(cb => {
+        if (cb.checked) {
+          anyChecked = true;
+          const price = parseFloat(cb.dataset.price);
+          total += price;
+
+          const cartId = cb.value;
+          const quantity = cb.dataset.quantity;
+          const productId = cb.dataset.productId;
+
+          // เพิ่ม hidden inputs
+          form.appendChild(createHiddenInput('cart_ids[]', cartId));
+          form.appendChild(createHiddenInput('quantities[]', quantity));
+          form.appendChild(createHiddenInput('product_ids[]', productId));
+          form.appendChild(createHiddenInput('prices[]', price));
+        }
+      });
+
+      document.getElementById('paymentSection').style.display = anyChecked ? 'block' : 'none';
+      document.getElementById('paymentSlip').required = anyChecked;
+      document.getElementById('totalSelectedPrice').textContent = total.toFixed(2);
+    }
+
+    function createHiddenInput(name, value) {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = name;
+      input.value = value;
+      input.classList.add('dynamic-hidden');
+      return input;
+    }
+
+    checkboxes.forEach(cb => cb.addEventListener('change', togglePaymentSectionAndTotal));
+  </script>
+
+</body>
+</html>

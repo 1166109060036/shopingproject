@@ -1,0 +1,31 @@
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #submitbtn {
+      background-color: #a7fbaa; /* Green */
+      border: none;
+      color: rgb(52, 102, 63);
+      padding: 15px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+    }
+
+    #submitbtn:hover {
+      background-color: #68ac73; /* Darker green on hover */
+      color: rgb(170, 255, 188);
+
+    }
+
+    .hidden {
+  display: none;
+}

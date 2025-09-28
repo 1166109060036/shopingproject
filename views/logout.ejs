@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>Logging out...</title>
+  <script>
+    // ลบข้อมูลใน localStorage
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userRole');
+
+    // จากนั้น redirect ไปหน้า login
+    window.location.href = "/login";
+  </script>
+</head>
+<body>
+  <p>กำลังออกจากระบบ...</p>
+</body>
+</html>

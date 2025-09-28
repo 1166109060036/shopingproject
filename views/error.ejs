@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>เกิดข้อผิดพลาด</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="text-danger">เกิดข้อผิดพลาด</h1>
+    <p><%= message %></p>
+    <% if (error && error.stack) { %>
+      <pre><%= error.stack %></pre>
+    <% } %>
+    <a href="/" class="btn btn-primary mt-3">กลับไปหน้าแรก</a>
+  </div>
+</body>
+</html>
