@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 28, 2025 at 10:58 AM
+-- Generation Time: Oct 01, 2025 at 07:13 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -35,6 +35,14 @@ CREATE TABLE `carts` (
   `price` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `carts`
+--
+
+INSERT INTO `carts` (`cart_id`, `product_id`, `user_id`, `cart_quantity`, `price`) VALUES
+(21, 11, 2, 1, 13000.00),
+(22, 12, 2, 1, 13000.00);
+
 -- --------------------------------------------------------
 
 --
@@ -54,8 +62,9 @@ CREATE TABLE `customermember` (
 
 INSERT INTO `customermember` (`cus_id`, `cus_fullname`, `cus_address`, `cus_phone`) VALUES
 (1, 'แอดมิน', '00/00', '0000000000'),
-(16, 'กันตินันท์ ร่มโพธิ์', '39/1 หมู่12 ต.พรหมณี อ.เมือง จ.นครนายก 26000', '0649758806'),
-(21, 'กันตินันท์ ร่มโพธิ์', '39/1 หมู่12 ต.พรหมณี อ.เมือง จ.นครนายก 26000', '0655697769');
+(2, 'กันตินันท์ ร่มโพธิ์', '39/1 หมู่12 ต.พรหมณี อ.เมือง จ.นครนายก 26000', '0649758806'),
+(21, 'กันตินันท์ ร่มโพธิ์', '39/1 หมู่12 ต.พรหมณี อ.เมือง จ.นครนายก 26000', '0655697769'),
+(22, 'ทดสอบ ทดสอบ', 'ทดสอบที่อยู่', '0111111111');
 
 -- --------------------------------------------------------
 
@@ -143,7 +152,25 @@ INSERT INTO `logadmin` (`id`, `user_id`, `login_time`, `ip_address`, `username`,
 (65, 1, '2025-08-17 22:42:39', '::1', 'admin', 'admin'),
 (66, 2, '2025-08-20 20:19:39', '::1', 'koonkoo2', 'user'),
 (67, 1, '2025-08-20 20:23:19', '::1', 'admin', 'admin'),
-(68, 1, '2025-08-20 20:23:39', '::1', 'admin', 'admin');
+(68, 1, '2025-08-20 20:23:39', '::1', 'admin', 'admin'),
+(69, 2, '2025-10-01 10:44:21', '::1', 'koonkoo2', 'user'),
+(70, 1, '2025-10-01 10:44:38', '::1', 'admin', 'admin'),
+(71, 2, '2025-10-01 10:45:23', '::1', 'koonkoo2', 'user'),
+(72, 1, '2025-10-01 10:45:51', '::1', 'admin', 'admin'),
+(73, 2, '2025-10-01 11:07:59', '::1', 'koonkoo2', 'user'),
+(74, 1, '2025-10-01 11:08:08', '::1', 'admin', 'admin'),
+(75, 2, '2025-10-01 11:17:43', '::1', 'koonkoo2', 'user'),
+(76, 1, '2025-10-01 11:18:01', '::1', 'admin', 'admin'),
+(77, 2, '2025-10-01 11:30:53', '::1', 'koonkoo2', 'user'),
+(78, 2, '2025-10-01 11:41:31', '::1', 'koonkoo2', 'user'),
+(79, 1, '2025-10-01 11:43:08', '::1', 'admin', 'admin'),
+(80, 2, '2025-10-01 11:43:24', '::1', 'koonkoo2', 'user'),
+(81, 2, '2025-10-01 11:48:13', '::1', 'koonkoo2', 'user'),
+(82, 2, '2025-10-01 11:49:17', '::1', 'koonkoo2', 'user'),
+(83, 2, '2025-10-01 11:49:43', '::1', 'koonkoo2', 'user'),
+(84, 2, '2025-10-01 11:55:21', '::1', 'koonkoo2', 'user'),
+(85, 22, '2025-10-01 11:55:57', '::1', 'test', 'user'),
+(86, 1, '2025-10-01 12:01:47', '::1', 'admin', 'admin');
 
 -- --------------------------------------------------------
 
@@ -162,6 +189,14 @@ CREATE TABLE `orders` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `orders`
+--
+
+INSERT INTO `orders` (`order_id`, `user_id`, `product_id`, `quantity`, `price`, `slip_image`, `status`, `created_at`, `updated_at`) VALUES
+(19, 2, 11, 1, 13000.00, '/images/slip_1759292274277.jpg', 'จัดส่งสำเร็จ', '2025-10-01 04:17:54', '2025-10-01 04:22:44'),
+(20, 22, 12, 1, 20000.00, '/images/slip_1759294587011.jpg', 'จัดส่งสำเร็จ', '2025-10-10 04:56:27', '2025-10-01 05:08:39');
 
 -- --------------------------------------------------------
 
@@ -198,8 +233,17 @@ CREATE TABLE `products` (
   `price` decimal(10,2) NOT NULL,
   `quantity` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `image` varchar(255) DEFAULT NULL
+  `image` varchar(255) DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1 COMMENT '1 = active, 0 = inactive'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `products`
+--
+
+INSERT INTO `products` (`product_id`, `product_name`, `description`, `price`, `quantity`, `created_at`, `image`, `is_active`) VALUES
+(11, 'จักรยาน', 'จักรยานเสือภูเขา', 13000.00, 19, '2025-10-01 04:17:19', '/images/1759292757057.jpg', 1),
+(12, 'ทดสอบ2', 'test2', 13000.00, 20, '2025-10-01 04:43:17', '/images/1759293797750.png', 1);
 
 -- --------------------------------------------------------
 
@@ -223,7 +267,8 @@ INSERT INTO `user` (`id`, `email`, `username`, `password`, `role`) VALUES
 (1, 'admin@gmail.com', 'admin', '123456', 'admin'),
 (2, 'partouton@gmail.com', 'koonkoo2', '230348ZA', 'user'),
 (16, 'satzath123@gmail.com', 'koonkoo4', '230348Za!', 'user'),
-(21, 'partouton1@gmail.com', 'partouton1', '230348Za!', 'user');
+(21, 'partouton1@gmail.com', 'partouton1', '230348Za!', 'user'),
+(22, 'test@gmail.com', 'test', '230348Za!', 'user');
 
 --
 -- Indexes for dumped tables
@@ -234,8 +279,8 @@ INSERT INTO `user` (`id`, `email`, `username`, `password`, `role`) VALUES
 --
 ALTER TABLE `carts`
   ADD PRIMARY KEY (`cart_id`),
-  ADD KEY `product_id` (`product_id`),
-  ADD KEY `user_id` (`user_id`);
+  ADD KEY `fk_carts_user` (`user_id`),
+  ADD KEY `fk_carts_product` (`product_id`);
 
 --
 -- Indexes for table `customermember`
@@ -256,7 +301,7 @@ ALTER TABLE `logadmin`
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`order_id`),
   ADD KEY `user_id` (`user_id`),
-  ADD KEY `product_id` (`product_id`);
+  ADD KEY `fk_orders_product` (`product_id`);
 
 --
 -- Indexes for table `password_resets`
@@ -285,19 +330,19 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `carts`
 --
 ALTER TABLE `carts`
-  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `logadmin`
 --
 ALTER TABLE `logadmin`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
 
 --
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `password_resets`
@@ -309,13 +354,13 @@ ALTER TABLE `password_resets`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- Constraints for dumped tables
@@ -325,8 +370,8 @@ ALTER TABLE `user`
 -- Constraints for table `carts`
 --
 ALTER TABLE `carts`
-  ADD CONSTRAINT `carts_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `carts_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_carts_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_carts_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `customermember`
@@ -344,8 +389,8 @@ ALTER TABLE `logadmin`
 -- Constraints for table `orders`
 --
 ALTER TABLE `orders`
-  ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
-  ADD CONSTRAINT `orders_ibfk_3` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`);
+  ADD CONSTRAINT `fk_orders_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`),
+  ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
 
 --
 -- Constraints for table `password_resets`
