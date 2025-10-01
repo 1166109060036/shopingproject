@@ -165,4 +165,66 @@ router.get('/logout', (req, res) => {
   res.render('logout');
 });
 
+// ✅ หน้าแสดงยอดขาย (Sales Report)
+router.get('/dashboard/sales', (req, res) => {
+  // Query สำหรับข้อมูลในกราฟ (ยอดขาย 30 วันล่าสุด)
+  const salesByDayQuery = `
+    SELECT 
+      DATE_FORMAT(created_at, '%Y-%m-%d') as sale_date,
+      SUM(price) as daily_total
+    FROM orders 
+    WHERE status IN ('ชำระเงินสำเร็จ', 'สินค้ากำลังจัดส่ง', 'จัดส่งสำเร็จ') AND created_at >= CURDATE() - INTERVAL 30 DAY
+    GROUP BY DATE(created_at)
+    ORDER BY sale_date ASC;
+  `;
+
+  // Query สำหรับสรุปยอดขาย (วันนี้, เดือนนี้, ปีนี้) 
+  const summaryQuery = `
+    SELECT
+      (SELECT SUM(price) FROM orders WHERE status IN ('ชำระเงินสำเร็จ', 'สินค้ากำลังจัดส่ง', 'จัดส่งสำเร็จ') AND DATE(created_at) = CURDATE()) as today_sales,
+      (SELECT SUM(price) FROM orders WHERE status IN ('ชำระเงินสำเร็จ', 'สินค้ากำลังจัดส่ง', 'จัดส่งสำเร็จ') AND MONTH(created_at) = MONTH(CURDATE()) AND YEAR(created_at) = YEAR(CURDATE())) as month_sales,
+      (SELECT SUM(price) FROM orders WHERE status IN ('ชำระเงินสำเร็จ', 'สินค้ากำลังจัดส่ง', 'จัดส่งสำเร็จ') AND YEAR(created_at) = YEAR(CURDATE())) as year_sales;
+  `;
+
+  db.query(salesByDayQuery, (err, salesData) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send('เกิดข้อผิดพลาดในการดึงข้อมูลยอดขาย');
+    }
+
+    db.query(summaryQuery, (err, summaryData) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send('เกิดข้อผิดพลาดในการดึงข้อมูลสรุป');
+      }
+
+      // Query สำหรับสินค้าขายดี 5 อันดับแรก
+      const bestSellersQuery = `
+        SELECT
+          p.product_name,
+          SUM(o.quantity) AS total_quantity_sold
+        FROM orders AS o
+        JOIN products AS p ON o.product_id = p.product_id
+        WHERE o.status IN ('ชำระเงินสำเร็จ', 'สินค้ากำลังจัดส่ง', 'จัดส่งสำเร็จ')
+        GROUP BY p.product_name
+        ORDER BY total_quantity_sold DESC
+        LIMIT 5;
+      `;
+
+      db.query(bestSellersQuery, (err, bestSellersData) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).send('เกิดข้อผิดพลาดในการดึงข้อมูลสินค้าขายดี');
+        }
+        res.render('sales-report', {
+          title: 'รายงานยอดขาย',
+          salesData: salesData,
+          summary: summaryData[0],
+          bestSellers: bestSellersData // ข้อมูลสินค้าขายดี
+        });
+      });
+    });
+  });
+});
+
 module.exports = router;

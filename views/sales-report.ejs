@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title %></title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #f0f0f0, #d6d6d6);
+      color: #333;
+      font-family: "Prompt", sans-serif;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: rgba(123, 0, 0, 0.85) !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .navbar-nav .nav-link {
+      color: white !important;
+      font-weight: 500;
+    }
+    .navbar-nav .nav-link:hover {
+      color: #ffe6e6 !important;
+    }
+    .chip {
+      display:inline-flex; align-items:center; gap:.4rem; padding:.35rem .6rem;
+      border-radius:999px;
+      background: rgba(160,0,0,.15);
+      border:1px solid rgba(160,0,0,.35);
+      color:#a00000;
+      font-size:.82rem;
+      font-weight:600;
+    }
+    .btn-outline-light {
+      border-radius: 12px;
+    }
+
+    /* Section Heading */
+    h1.section-title, h1.brand-gradient {
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #a00000;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      display: inline-block;
+      padding: 10px 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    /* Cards */
+    .card, .stat-card {
+      border: none;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .card:hover, .stat-card:hover {
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+    }
+    .card-header {
+      font-weight: 600;
+      border-radius: 20px 20px 0 0 !important;
+      background: #a00000;
+      color: #fff;
+    }
+
+    /* Stat Cards */
+    .stat-title { font-size: .95rem; color:#555; margin-bottom:.35rem; }
+    .stat-value { font-size: 2rem; font-weight: 800; letter-spacing:.3px; }
+    .footer-note { color:#777; font-size:.9rem; }
+
+    /* Table */
+    .table {
+      border-radius: 15px;
+      overflow: hidden;
+    }
+    .table thead {
+      background: #a00000;
+      color: white;
+    }
+
+    /* Buttons */
+    .btn-outline-danger {
+      border-radius: 12px;
+      color: #a00000;
+      border-color: #a00000;
+    }
+    .btn-outline-danger:hover {
+      background: #a00000;
+      color: white;
+    }
+    .btn-danger {
+      border-radius: 12px;
+    }
+    .btn-outline-dark {
+      border-radius: 12px;
+    }
+  </style>
+</head>
+<body>
+  <!-- NAV -->
+  <nav class="navbar navbar-expand-lg p-3 fixed-top">
+    <div class="container">
+      <a class="navbar-brand text-white fw-bold" href="/dashboard">
+        <i class="bi bi-graph-up-arrow"></i> Admin Dashboard
+      </a>
+      <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div id="nav" class="collapse navbar-collapse justify-content-between">
+        <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link" href="/dashboard">จัดการสินค้า</a></li>
+          <li class="nav-item"><a class="nav-link" href="/dashboard#manage-orders">จัดการคำสั่งซื้อ</a></li>
+          <li class="nav-item"><a class="nav-link" href="/products">สินค้า</a></li>
+          <li class="nav-item"><span class="nav-link active chip"><i class="bi bi-speedometer2"></i> ภาพรวมยอดขาย</span></li>
+        </ul>
+        <a href="/dashboard" class="btn btn-outline-light btn-sm"><i class="bi bi-arrow-left"></i> กลับหน้าหลัก</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container mt-5 pt-5">
+    <!-- TITLE -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+      <h1 class="brand-gradient"><%= title %></h1>
+      <span class="chip"><i class="bi bi-calendar2-week me-1"></i> อัปเดตเรียลไทม์จากคำสั่งซื้อ</span>
+    </div>
+
+    <!-- SUMMARY CARDS -->
+    <div class="row g-3 mb-4">
+      <div class="col-12 col-md-4">
+        <div class="stat-card p-4 h-100">
+          <div class="d-flex justify-content-between align-items-start">
+            <span class="stat-title">ยอดขายวันนี้</span>
+            <i class="bi bi-sun fs-4 text-warning"></i>
+          </div>
+          <div class="stat-value" id="todayValue">0</div>
+          <div class="footer-note"><i class="bi bi-info-circle me-1"></i>อัปเดตเมื่อโหลดหน้า</div>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="stat-card p-4 h-100">
+          <div class="d-flex justify-content-between align-items-start">
+            <span class="stat-title">ยอดขายเดือนนี้</span>
+            <i class="bi bi-calendar-month fs-4 text-info"></i>
+          </div>
+          <div class="stat-value" id="monthValue">0</div>
+          <div class="footer-note">รวมตั้งแต่วันแรกของเดือน</div>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="stat-card p-4 h-100">
+          <div class="d-flex justify-content-between align-items-start">
+            <span class="stat-title">ยอดขายปีนี้</span>
+            <i class="bi bi-trophy fs-4 text-success"></i>
+          </div>
+          <div class="stat-value" id="yearValue">0</div>
+          <div class="footer-note">รวมตั้งแต่ 1 ม.ค. ถึงวันนี้</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="row g-3">
+      <div class="col-12 col-lg-8">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-activity me-2"></i> ยอดขาย 30 วันล่าสุด</span>
+            <span class="chip"><i class="bi bi-clock-history"></i> 30 วัน</span>
+          </div>
+          <div class="card-body">
+            <canvas id="salesChart"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-4">
+        <div class="card">
+          <div class="card-header"><i class="bi bi-stars me-2"></i> 5 อันดับสินค้าขายดี</div>
+          <div class="card-body">
+            <canvas id="bestSellersChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const summary = <%- JSON.stringify(summary || {}) %>;
+    const salesData = <%- JSON.stringify(salesData || []) %>;
+    const bestSellers = <%- JSON.stringify(bestSellers || []) %>;
+
+    const THB = new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB', maximumFractionDigits: 0 });
+
+    document.getElementById('todayValue').textContent = THB.format(summary.today_sales || 0).replace('THB','฿');
+    document.getElementById('monthValue').textContent = THB.format(summary.month_sales || 0).replace('THB','฿');
+    document.getElementById('yearValue').textContent  = THB.format(summary.year_sales || 0).replace('THB','฿');
+
+    const salesLabels = salesData.map(i => i.sale_date);
+    const salesValues = salesData.map(i => Number(i.daily_total || 0));
+
+    new Chart(document.getElementById('salesChart'), {
+      type: 'line',
+      data: {
+        labels: salesLabels,
+        datasets: [{
+          label: 'ยอดขาย (บาท)',
+          data: salesValues,
+          borderColor: '#a00000',
+          backgroundColor: 'rgba(160,0,0,.1)',
+          borderWidth: 2,
+          tension: .35,
+          pointRadius: 2,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: ctx => ' ' + THB.format(ctx.parsed.y).replace('THB','฿')
+            }
+          },
+          legend: { labels: { color: '#333' } }
+        },
+        scales: {
+          x: { ticks: { color:'#555' }, grid: { color:'rgba(160,0,0,.15)' } },
+          y: {
+            ticks: {
+              color:'#555',
+              callback: (v)=> THB.format(v).replace('THB','฿')
+            },
+            grid: { color:'rgba(160,0,0,.15)' },
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    const bestLabels = bestSellers.map(i => i.product_name);
+    const bestValues = bestSellers.map(i => Number(i.total_quantity_sold || 0));
+
+    const makeColors = (n) => Array.from({length:n}, (_,k)=> `hsl(${(k*55)%360} 70% 55%)`);
+
+    new Chart(document.getElementById('bestSellersChart'), {
+      type: 'doughnut',
+      data: {
+        labels: bestLabels,
+        datasets: [{
+          data: bestValues,
+          backgroundColor: makeColors(bestValues.length),
+          hoverOffset: 6
+        }]
+      },
+      options:{
+        plugins:{
+          legend:{ position:'bottom', labels:{ color:'#333' } },
+          tooltip:{ callbacks:{ label: ctx => ` ${ctx.label}: ${ctx.parsed} ชิ้น` } }
+        },
+        cutout: '58%'
+      }
+    });
+  </script>
+</body>
+</html>
