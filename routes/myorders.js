@@ -41,9 +41,10 @@ router.get('/invoice/:orderId', (req, res) => {
             const order = orders[0];
 
             db.query(
-                `SELECT cus_fullname, cus_address, cus_phone 
-                 FROM customermember 
-                 WHERE cus_id = ?`,
+                `SELECT c.cus_fullname, c.cus_address, c.cus_phone
+                FROM customermember c
+                INNER JOIN user u ON c.cus_id = u.id
+                WHERE u.id = ?`,
                 [userId],
                 (err, customers) => {
                     if (err) return res.status(500).send('เกิดข้อผิดพลาดในระบบ');

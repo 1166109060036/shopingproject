@@ -1,18 +1,18 @@
 var express = require('express');
 var router = express.Router();
-var db = require('../db'); // สมมุติว่ามีไฟล์ db.js เชื่อม MySQL อยู่
+var db = require('../db');
 var path = require('path');
 var multer = require('multer');
 
-/* GET home page. */
+/* ✅ แสดงเฉพาะสินค้าที่ active */
 router.get('/products', function(req, res, next) {
-  db.query('SELECT * FROM products', (err, results) => {
+  db.query('SELECT * FROM products WHERE is_active = 1', (err, results) => {
     if (err) throw err;
     res.render('products', { title: 'Products', products: results });
   });
 });
 
-
+/* ✅ ดึง user email */
 router.post('/product/get-user-email', (req, res) => {
   const { userId } = req.body;
 
@@ -35,10 +35,11 @@ router.post('/product/get-user-email', (req, res) => {
   });
 });
 
+/* ✅ แสดงรายละเอียดสินค้าเฉพาะ active */
 router.get('/products/:id', (req, res) => {
   const productId = req.params.id;
 
-  const sql = 'SELECT * FROM products WHERE product_id = ?';
+  const sql = 'SELECT * FROM products WHERE product_id = ? AND is_active = 1';
   db.query(sql, [productId], (err, results) => {
     if (err) {
       console.error(err);
@@ -46,7 +47,7 @@ router.get('/products/:id', (req, res) => {
     }
 
     if (results.length === 0) {
-      return res.status(404).send('ไม่พบสินค้า');
+      return res.status(404).send('ไม่พบสินค้าหรือสินค้านี้ไม่เปิดขายแล้ว');
     }
 
     const product = results[0];
@@ -54,18 +55,19 @@ router.get('/products/:id', (req, res) => {
   });
 });
 
+/* ✅ เพิ่มสินค้าลงตะกร้า (เฉพาะ active) */
 router.post('/add-to-cart/:productId', (req, res) => {
   const productId = req.params.productId;
   const quantity = parseInt(req.body.quantity);
-  const userId = parseInt(req.body.userId); // ✅ ดึงมาจาก form ที่ส่งมา
+  const userId = parseInt(req.body.userId);
 
   if (!userId) {
     return res.status(401).send('กรุณาเข้าสู่ระบบก่อน');
   }
 
-  const getProductQuery = 'SELECT price FROM products WHERE products.product_id = ?';
+  const getProductQuery = 'SELECT price FROM products WHERE product_id = ? AND is_active = 1';
   db.query(getProductQuery, [productId], (err, results) => {
-    if (err || results.length === 0) return res.status(500).send('ไม่พบสินค้า');
+    if (err || results.length === 0) return res.status(500).send('ไม่พบสินค้าหรือสินค้านี้ไม่เปิดขายแล้ว');
 
     const price = results[0].price;
     const insertCartQuery = `
@@ -79,7 +81,5 @@ router.post('/add-to-cart/:productId', (req, res) => {
     });
   });
 });
-
-
 
 module.exports = router;

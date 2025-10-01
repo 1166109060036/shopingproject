@@ -3,77 +3,149 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dashboard</title>
+  <title>คำสั่งซื้อของฉัน</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #f0f0f0, #d6d6d6);
+      font-family: "Prompt", sans-serif;
+      padding-top: 70px;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: rgba(123, 0, 0, 0.85) !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .navbar-nav .nav-link {
+      color: white !important;
+      font-weight: 500;
+    }
+    .navbar-nav .nav-link:hover {
+      color: #ffe6e6 !important;
+    }
+    .navbar-toggler-icon {
+      filter: invert(1);
+    }
+
+    /* Logout */
+    #logout-button {
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      border-radius: 12px;
+      padding: 5px 12px;
+    }
+    #logout-button:hover {
+      background: rgba(255, 255, 255, 0.8);
+      color: #a00000;
+    }
+
+    /* Section Title */
+    h2.section-title {
+      font-weight: 700;
+      margin-bottom: 30px;
+      color: #a00000;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      display: inline-block;
+      padding: 10px 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    /* Table */
+    .table thead {
+      background: #a00000;
+      color: white;
+    }
+    .table {
+      border-radius: 15px;
+      overflow: hidden;
+    }
+
+    /* ปุ่มดาวน์โหลด PDF */
+    .btn-pdf {
+      color: #a00000;
+      font-weight: 500;
+      text-decoration: none;
+    }
+    .btn-pdf:hover {
+      color: #cc0000;
+      text-decoration: underline;
+    }
+
+    /* Responsive Table → Card View */
+    @media (max-width: 768px) {
+      .table thead {
+        display: none;
+      }
+      .table, .table tbody, .table tr, .table td {
+        display: block;
+        width: 100%;
+      }
+      .table tr {
+        margin-bottom: 1rem;
+        background: white;
+        border-radius: 12px;
+        padding: 12px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      }
+      .table td {
+        text-align: left;
+        padding-left: 50%;
+        position: relative;
+      }
+      .table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        font-weight: bold;
+        color: #a00000;
+      }
+      .table img {
+        max-width: 100%;
+        height: auto;
+      }
+    }
+  </style>
 </head>
-<style>
-  
-  #logout-button {
-    color: rgb(255, 160, 160);
-  }
-  #logout-button:hover {
-    color: rgb(255, 0, 0);
-  }
-  #nav-text {
-    color: rgb(255, 255, 255);
-  }
-  #nav-text:hover {
-    color: rgb(249, 255, 63);
-  }
-  .hiden {
-    display: none;
-  }
-    .card-img-top {
-    width: 100%;
-    height: 300px; /* หรือจะเปลี่ยนเป็น 250px ก็ได้ */
-    object-fit: cover;
-    object-position: center;
-  }
+<body>
+  <!-- ✅ Navbar -->
+  <nav class="navbar navbar-expand-lg fixed-top p-3">
+    <div class="container-fluid">
+      <a class="navbar-brand text-white fw-bold" href="/products">CyloCity</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
+      <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link" href="/products">สินค้า</a></li>
+          <li class="nav-item"><a class="nav-link" href="/profile">ข้อมูลส่วนตัว</a></li>
+          <li class="nav-item"><a class="nav-link" href="/carts">ตะกร้าสินค้า</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/myorders">คำสั่งซื้อของฉัน</a></li>
+          <li class="nav-item d-none" id="dashboard-link"><a class="nav-link" href="/dashboard">Dashboard</a></li>
+        </ul>
 
-</style>
-<body class="bg-light text-dark">
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark p-3 fixed-top">
-    <a class="navbar-brand" href="/products">Home</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-      <ul class="navbar-nav">
-        <li class="nav-item active">
-          <a class="nav-link active" href="/products" id="nav-text">สินค้า</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" href="/profile" id="nav-text">ข้อมูลส่วนตัว</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active"  href="/carts" id="nav-text">ตระกร้าสินค้า</a>
-        </li>
-                <li class="nav-item">
-          <a class="nav-link active" href="/myorders" id="nav-text">คำสั่งซื้อของฉัน</a>
-        </li>
-        <li class="nav-item" style="display: none;" id="dashboard-link">
-            <a class="nav-link active" href="/dashboard" id="nav-text">Dashboard</a>
-        </li>
-      </ul>
-      <div>
-        <span class="text-white me-3" id="user-email">Loading...</span>
-        <a href="/logout" class="btn" id="logout-button">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-left" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M6 12.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v2a.5.5 0 0 1-1 0v-2A1.5 1.5 0 0 1 6.5 2h8A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0z"/>
-                <path fill-rule="evenodd" d="M.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L1.707 7.5H10.5a.5.5 0 0 1 0 1H1.707l2.147 2.146a.5.5 0 0 1-.708.708z"/>
-            </svg> Logout
-        </a>
+        <div class="d-flex align-items-center">
+          <span class="text-white me-3" id="user-email">Loading...</span>
+          <a href="/logout" class="btn" id="logout-button">Logout</a>
+        </div>
       </div>
     </div>
   </nav>
-    <div class="container mt-5 pt-5">
-    <h2>คำสั่งซื้อของฉัน</h2>
+
+  <!-- ✅ My Orders Section -->
+  <div class="container mt-4">
+    <h2 class="section-title">คำสั่งซื้อของฉัน</h2>
 
     <div class="table-responsive">
-        <table class="table table-bordered text-center align-middle">
-        <thead class="table-light">
-            <tr>
+      <table class="table table-hover text-center align-middle">
+        <thead>
+          <tr>
             <th>รูป</th>
             <th>ชื่อสินค้า</th>
             <th>จำนวน</th>
@@ -81,71 +153,60 @@
             <th>สถานะ</th>
             <th>วัน/เวลา ที่สั่ง</th>
             <th>พิมพ์ใบเสร็จ</th>
-            </tr>
+          </tr>
         </thead>
         <tbody>
-            <% orders.forEach(order => { %>
-            <tr>
-                <td>
-                <% if (order.image) { %>
-                    <img src="<%= order.image %>" width="80" class="img-thumbnail">
-                <% } else { %>
-                    <span class="text-muted">ไม่มีรูป</span>
-                <% } %>
-                </td>
-                <td><%= order.product_name %></td>
-                <td><%= order.quantity %></td>
-                <td><%= order.price %></td>
-                <td><%= order.status %></td>
-                <td><%= new Date(order.created_at).toLocaleString() %></td>
-                <td><a href="/invoice/<%= order.order_id %>" style="text-decoration: none; color: rgb(120, 0, 0); ">Download <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-file-pdf" viewBox="0 0 16 16">
-  <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1"/>
-  <path d="M4.603 12.087a.8.8 0 0 1-.438-.42c-.195-.388-.13-.776.08-1.102.198-.307.526-.568.897-.787a7.7 7.7 0 0 1 1.482-.645 20 20 0 0 0 1.062-2.227 7.3 7.3 0 0 1-.43-1.295c-.086-.4-.119-.796-.046-1.136.075-.354.274-.672.65-.823.192-.077.4-.12.602-.077a.7.7 0 0 1 .477.365c.088.164.12.356.127.538.007.187-.012.395-.047.614-.084.51-.27 1.134-.52 1.794a11 11 0 0 0 .98 1.686 5.8 5.8 0 0 1 1.334.05c.364.065.734.195.96.465.12.144.193.32.2.518.007.192-.047.382-.138.563a1.04 1.04 0 0 1-.354.416.86.86 0 0 1-.51.138c-.331-.014-.654-.196-.933-.417a5.7 5.7 0 0 1-.911-.95 11.6 11.6 0 0 0-1.997.406 11.3 11.3 0 0 1-1.021 1.51c-.29.35-.608.655-.926.787a.8.8 0 0 1-.58.029m1.379-1.901q-.25.115-.459.238c-.328.194-.541.383-.647.547-.094.145-.096.25-.04.361q.016.032.026.044l.035-.012c.137-.056.355-.235.635-.572a8 8 0 0 0 .45-.606m1.64-1.33a13 13 0 0 1 1.01-.193 12 12 0 0 1-.51-.858 21 21 0 0 1-.5 1.05zm2.446.45q.226.244.435.41c.24.19.407.253.498.256a.1.1 0 0 0 .07-.015.3.3 0 0 0 .094-.125.44.44 0 0 0 .059-.2.1.1 0 0 0-.026-.063c-.052-.062-.2-.152-.518-.209a4 4 0 0 0-.612-.053zM8.078 5.8a7 7 0 0 0 .2-.828q.046-.282.038-.465a.6.6 0 0 0-.032-.198.5.5 0 0 0-.145.04c-.087.035-.158.106-.196.283-.04.192-.03.469.046.822q.036.167.09.346z"/>
-</svg></a></td>
-            </tr>
-            <% }) %>
+          <% orders.forEach(order => { %>
+          <tr>
+            <td data-label="รูป">
+              <% if (order.image) { %>
+                <img src="<%= order.image %>" width="80" class="img-thumbnail rounded shadow-sm">
+              <% } else { %>
+                <span class="text-muted">ไม่มีรูป</span>
+              <% } %>
+            </td>
+            <td data-label="สินค้า"><%= order.product_name %></td>
+            <td data-label="จำนวน"><%= order.quantity %></td>
+            <td data-label="ราคา" class="text-danger fw-bold">฿ <%= order.price %></td>
+            <td data-label="สถานะ"><span class="badge bg-secondary"><%= order.status %></span></td>
+            <td data-label="วันที่"><%= new Date(order.created_at).toLocaleString() %></td>
+            <td data-label="ใบเสร็จ">
+              <a href="/invoice/<%= order.order_id %>" class="btn-pdf">
+                Download <i class="bi bi-file-pdf"></i>
+              </a>
+            </td>
+          </tr>
+          <% }) %>
         </tbody>
-        </table>
+      </table>
     </div>
-    </div>
+  </div>
 
-  
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const userId = localStorage.getItem('userId');
-    const userRole = localStorage.getItem('userRole');
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const userId = localStorage.getItem('userId');
+      const userRole = localStorage.getItem('userRole');
+      if (userRole === 'admin') document.getElementById('dashboard-link').classList.remove("d-none");
 
-    if (userRole === 'admin') {
-      document.getElementById('dashboard-link').style.display = 'inline';
-    }
-
-    if (!userId) {
-      document.getElementById('user-email').textContent = "ไม่พบผู้ใช้";
-      return;
-    }
-
-    fetch('/product/get-user-email', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId })
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.email) {
-        document.getElementById('user-email').textContent = data.email;
-      } else {
-        document.getElementById('user-email').textContent = "ไม่พบอีเมล";
+      if (!userId) {
+        document.getElementById('user-email').textContent = "ไม่พบผู้ใช้";
+        return;
       }
-    })
-    .catch(err => {
-      console.error('เกิดข้อผิดพลาด:', err);
-      document.getElementById('user-email').textContent = "โหลดอีเมลไม่สำเร็จ";
+
+      fetch('/product/get-user-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId })
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('user-email').textContent = data.email || "ไม่พบอีเมล";
+      })
+      .catch(() => {
+        document.getElementById('user-email').textContent = "โหลดอีเมลไม่สำเร็จ";
+      });
     });
-  });
-  
-</script>
-
-
+  </script>
 </body>
 </html>

@@ -2,136 +2,263 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- สำคัญมาก -->
   <title><%= title %></title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #f0f0f0, #d6d6d6);
+      font-family: "Prompt", sans-serif;
+      padding-top: 70px;
+      color: #333;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: rgba(123, 0, 0, 0.85) !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .navbar-nav .nav-link {
+      color: white !important;
+      font-weight: 500;
+    }
+    .navbar-nav .nav-link:hover {
+      color: #ffe6e6 !important;
+    }
+    .navbar-toggler {
+      border: none;
+    }
+    .navbar-toggler-icon {
+      filter: invert(1);
+    }
+
+    /* Logout */
+    #logout-button {
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      border-radius: 12px;
+      padding: 5px 12px;
+    }
+    #logout-button:hover {
+      background: rgba(255, 255, 255, 0.8);
+      color: #a00000;
+    }
+
+    /* Section Title */
+    h1.section-title {
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #a00000;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      display: inline-block;
+      padding: 10px 30px;
+    }
+
+    /* Table */
+    .table thead {
+      background: #a00000;
+      color: white;
+    }
+    .table {
+      border-radius: 15px;
+      overflow: hidden;
+    }
+
+    /* ปุ่ม */
+    .btn {
+      border-radius: 12px;
+    }
+    .btn-danger {
+      background: #a00000;
+      border: none;
+    }
+    .btn-danger:hover {
+      background: #cc0000;
+    }
+    .btn-success {
+      background: #a00000;
+      border: none;
+    }
+    .btn-success:hover {
+      background: #cc0000;
+    }
+
+    /* ✅ Responsive เพิ่มเติม */
+    @media (max-width: 768px) {
+      .table thead {
+        display: none; /* ซ่อนหัวตาราง */
+      }
+      .table, .table tbody, .table tr, .table td {
+        display: block;
+        width: 100%;
+      }
+      .table tr {
+        margin-bottom: 1rem;
+        background: white;
+        border-radius: 12px;
+        padding: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      }
+      .table td {
+        text-align: left;
+        padding-left: 50%;
+        position: relative;
+      }
+      .table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        font-weight: bold;
+        color: #a00000;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="container mt-5">
-    <h1 class="mb-4"><%= title %></h1>
-    <a href="/products" class="btn btn-outline-secondary m-3">ย้อนกลับ</a>
+  <!-- ✅ Navbar -->
+  <nav class="navbar navbar-expand-lg fixed-top p-3">
+    <div class="container-fluid">
+      <a class="navbar-brand text-white fw-bold" href="/products">CyloCity</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link" href="/products">สินค้า</a></li>
+          <li class="nav-item"><a class="nav-link" href="/profile">ข้อมูลส่วนตัว</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/carts">ตะกร้าสินค้า</a></li>
+          <li class="nav-item"><a class="nav-link" href="/myorders">คำสั่งซื้อของฉัน</a></li>
+          <li class="nav-item d-none" id="dashboard-link"><a class="nav-link" href="/dashboard">Dashboard</a></li>
+        </ul>
+
+        <div class="d-flex align-items-center">
+          <span class="text-white me-3" id="user-email">Loading...</span>
+          <a href="/logout" class="btn" id="logout-button">Logout</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ✅ Cart -->
+  <div class="container mt-4">
+    <h1 class="section-title"><%= title %></h1>
+
     <% if (!cartItems || cartItems.length === 0) { %>
-      <div class="alert alert-info">ตะกร้าว่างเปล่า</div>
-      <a href="/products" class="btn btn-primary">กลับไปเลือกซื้อสินค้า</a>
+      <div class="alert alert-info text-center fs-5">🛒 ตะกร้าว่างเปล่า</div>
+      <div class="text-center">
+        <a href="/products" class="btn btn-danger btn-lg">กลับไปเลือกซื้อสินค้า</a>
+      </div>
     <% } else { %>
       <form id="checkoutForm" action="/checkout" method="POST" enctype="multipart/form-data">
-        <table class="table table-bordered align-middle text-center">
-          <thead class="table-light">
-            <tr>
-              <th>เลือก</th>
-              <th>รูปภาพ</th>
-              <th>ชื่อสินค้า</th>
-              <th>จำนวน</th>
-              <th>ราคา/หน่วย (บาท)</th>
-              <th>ราคารวม (บาท)</th>
-              <th>จัดการ</th>
-            </tr>
-          </thead>
-          <tbody>
-            
-            <% let totalPrice = 0; %>
-            <% cartItems.forEach(item => { %>
-              <% 
-                const priceNum = Number(item.price);
-                const itemTotal = priceNum * item.cart_quantity; 
-                totalPrice += itemTotal; 
+        <div class="table-responsive">
+          <table class="table table-hover text-center align-middle">
+            <thead>
+              <tr>
+                <th>เลือก</th>
+                <th>รูป</th>
+                <th>สินค้า</th>
+                <th>จำนวน</th>
+                <th>ราคา/หน่วย</th>
+                <th>ราคารวม</th>
+                <th>ลบ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% let totalPrice = 0; %>
+              <% cartItems.forEach(item => { 
+                  const priceNum = Number(item.price);
+                  const itemTotal = priceNum * item.cart_quantity; 
+                  totalPrice += itemTotal; 
               %>
               <tr>
-                <td>
-                 <input 
-                    type="checkbox" 
+                <td data-label="เลือก">
+                  <input type="checkbox" 
                     name="selectedItems[]" 
                     value="<%= item.cart_id %>" 
                     class="item-checkbox" 
                     data-price="<%= (Number(item.price) * item.cart_quantity).toFixed(2) %>"
                     data-quantity="<%= item.cart_quantity %>"
-                    data-product-id="<%= item.product_id %>" 
-                  />
+                    data-product-id="<%= item.product_id %>" />
                 </td>
-                <td style="width: 100px;">
+                <td data-label="รูป">
                   <% if (item.image) { %>
-                    <img src="<%= item.image %>" alt="<%= item.product_name %>" class="img-fluid" style="max-height: 80px;" />
+                    <img src="<%= item.image %>" alt="<%= item.product_name %>" class="img-fluid rounded shadow-sm" style="max-height: 80px;" />
                   <% } else { %>
-                    ไม่มีรูป
+                    <span class="text-muted">ไม่มีรูป</span>
                   <% } %>
                 </td>
-                <td><%= item.product_name %></td>
-                <td><%= item.cart_quantity %></td>
-                <td><%= priceNum.toFixed(2) %></td>
-                <td><%= itemTotal.toFixed(2) %></td>
-                <td>
+                <td data-label="สินค้า"><%= item.product_name %></td>
+                <td data-label="จำนวน"><%= item.cart_quantity %></td>
+                <td data-label="ราคา/หน่วย" class="text-danger fw-bold">฿ <%= priceNum.toFixed(2) %></td>
+                <td data-label="ราคารวม" class="fw-bold">฿ <%= itemTotal.toFixed(2) %></td>
+                <td data-label="จัดการ">
                   <form action="/carts/delete/<%= item.cart_id %>" method="POST" onsubmit="return confirm('คุณแน่ใจหรือว่าต้องการลบสินค้านี้?');">
-                    <button type="submit" class="btn btn-danger btn-sm">ลบ</button>
+                    <button type="submit" class="btn btn-sm btn-danger w-100">ลบ</button>
                   </form>
                 </td>
               </tr>
-            <% }) %>
-          </tbody>
-          <tfoot>
-            <tr>
-              <th colspan="5" class="text-end">ราคารวมสินค้าที่เลือก</th>
-              <th colspan="2"><span id="totalSelectedPrice">0.00</span> บาท</th>
-            </tr>
-          </tfoot>
-        </table>
-
-        <div id="paymentSection" class="mt-4" style="display: none;">
-          <h5>โอนเงินไปที่เลขบัญชี: <strong>211-076-2691 ธนาคารกรุงไทย</strong></h5>
-          <div class="mb-3">
-            <label for="paymentSlip" class="form-label">แนบสลิปการชำระเงิน:</label>
-            <input type="file" name="paymentSlip" id="paymentSlip" class="form-control" accept="public/images/*" required>
-          </div>
-          <button type="submit" class="btn btn-success">ชำระเงิน</button>
+              <% }) %>
+            </tbody>
+            <tfoot>
+              <tr>
+                <th colspan="5" class="text-end">💰 ราคารวมสินค้าที่เลือก</th>
+                <th colspan="2"><span id="totalSelectedPrice">0.00</span> บาท</th>
+              </tr>
+            </tfoot>
+          </table>
         </div>
 
+        <!-- Payment -->
+        <div id="paymentSection" class="card mt-4" style="display: none;">
+          <div class="card-body">
+            <h5 class="mb-3 text-danger">โอนเงินไปที่บัญชี: <strong>211-076-2691 ธนาคารกรุงไทย</strong></h5>
+            <div class="mb-3">
+              <label for="paymentSlip" class="form-label">📎 แนบสลิปการชำระเงิน</label>
+              <input type="file" name="paymentSlip" id="paymentSlip" class="form-control" accept="image/*" required>
+            </div>
+            <button type="submit" class="btn btn-success w-100">✅ ชำระเงิน</button>
+          </div>
+        </div>
       </form>
     <% } %>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    // Responsive Cart Logic
     const checkboxes = document.querySelectorAll('.item-checkbox');
     const form = document.getElementById('checkoutForm');
-
     function togglePaymentSectionAndTotal() {
-      let total = 0;
-      let anyChecked = false;
-
-      // เคลียร์ hidden inputs เก่า
+      let total = 0, anyChecked = false;
       document.querySelectorAll('.dynamic-hidden').forEach(e => e.remove());
-
       checkboxes.forEach(cb => {
         if (cb.checked) {
           anyChecked = true;
           const price = parseFloat(cb.dataset.price);
           total += price;
-
-          const cartId = cb.value;
-          const quantity = cb.dataset.quantity;
-          const productId = cb.dataset.productId;
-
-          // เพิ่ม hidden inputs
-          form.appendChild(createHiddenInput('cart_ids[]', cartId));
-          form.appendChild(createHiddenInput('quantities[]', quantity));
-          form.appendChild(createHiddenInput('product_ids[]', productId));
+          form.appendChild(createHiddenInput('cart_ids[]', cb.value));
+          form.appendChild(createHiddenInput('quantities[]', cb.dataset.quantity));
+          form.appendChild(createHiddenInput('product_ids[]', cb.dataset.productId));
           form.appendChild(createHiddenInput('prices[]', price));
         }
       });
-
       document.getElementById('paymentSection').style.display = anyChecked ? 'block' : 'none';
       document.getElementById('paymentSlip').required = anyChecked;
       document.getElementById('totalSelectedPrice').textContent = total.toFixed(2);
     }
-
     function createHiddenInput(name, value) {
       const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = name;
-      input.value = value;
+      input.type = 'hidden'; input.name = name; input.value = value;
       input.classList.add('dynamic-hidden');
       return input;
     }
-
     checkboxes.forEach(cb => cb.addEventListener('change', togglePaymentSectionAndTotal));
   </script>
-
 </body>
 </html>

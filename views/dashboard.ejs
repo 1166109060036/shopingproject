@@ -3,54 +3,129 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dashboard</title>
+  <title>CyloCity | Dashboard</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<style>
-  #logout-button {
-    color: rgb(255, 160, 160);
-  }
-  #logout-button:hover {
-    color: rgb(255, 0, 0);
-  }
-  #nav-text {
-    color: rgb(255, 255, 255);
-  }
-  #nav-text:hover {
-    color: rgb(249, 255, 63);
-  }
-</style>
-<body class="bg-light text-dark">
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark p-3 fixed-top">
-    <a class="navbar-brand" href="#">Dashboard</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-      <ul class="navbar-nav">
-        <li class="nav-item active">
-          <a class="nav-link active" href="#manage-products" id="nav-text">จัดการสินค้า </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" href="#manage-orders" id="nav-text">จัดการคำสั่งซื้อ</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" href="/products" id="nav-text">สินค้า</a>
-        </li>
-      </ul>
-      <a href="/logout" class="btn" id="logout-button">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-left" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M6 12.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v2a.5.5 0 0 1-1 0v-2A1.5 1.5 0 0 1 6.5 2h8A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0z"/>
-            <path fill-rule="evenodd" d="M.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L1.707 7.5H10.5a.5.5 0 0 1 0 1H1.707l2.147 2.146a.5.5 0 0 1-.708.708z"/>
-          </svg> Logout
-      </a>
 
+  <style>
+    body {
+      background: linear-gradient(135deg, #f0f0f0, #d6d6d6);
+      color: #333;
+      font-family: "Prompt", sans-serif;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: rgba(123, 0, 0, 0.85) !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .navbar-nav .nav-link {
+      color: white !important;
+      font-weight: 500;
+    }
+    .navbar-nav .nav-link:hover {
+      color: #ffe6e6 !important;
+    }
+    #logout-button {
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      border-radius: 12px;
+      backdrop-filter: blur(8px);
+      padding: 6px 14px;
+      transition: 0.3s;
+    }
+    #logout-button:hover {
+      background: rgba(255, 255, 255, 0.8);
+      color: #a00000;
+    }
+
+    /* Section Heading */
+    h1.section-title {
+      font-weight: 700;
+      margin-bottom: 30px;
+      color: #a00000;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      display: inline-block;
+      padding: 10px 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    /* Card */
+    .card {
+      border: none;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .card:hover {
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+    }
+
+    .card-header {
+      font-weight: 600;
+      border-radius: 20px 20px 0 0 !important;
+    }
+
+    /* Table */
+    .table {
+      border-radius: 15px;
+      overflow: hidden;
+    }
+    .table thead {
+      background: #a00000;
+      color: white;
+    }
+
+    /* Buttons */
+    .btn-outline-danger {
+      border-radius: 12px;
+      color: #a00000;
+      border-color: #a00000;
+    }
+    .btn-outline-danger:hover {
+      background: #a00000;
+      color: white;
+    }
+    .btn-danger {
+      border-radius: 12px;
+    }
+    .btn-outline-dark {
+      border-radius: 12px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg p-3 fixed-top">
+    <div class="container">
+      <a class="navbar-brand text-white fw-bold" href="#">Dashboard</a>
+      <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link active" href="#manage-products">จัดการสินค้า</a></li>
+          <li class="nav-item"><a class="nav-link" href="#manage-orders">จัดการคำสั่งซื้อ</a></li>
+          <li class="nav-item"><a class="nav-link" href="/products">สินค้า</a></li>
+        </ul>
+        <a href="/logout" class="btn" id="logout-button">Logout</a>
+      </div>
     </div>
   </nav>
-  <div class="container mt-5 pt-5" >
-    <h1 class="mb-4 text-left text-dark" id="manage-products" >จัดการสินค้า</h1>
+
+  <div class="container mt-5 pt-5">
+    <!-- จัดการสินค้า -->
+    <h1 class="section-title" id="manage-products">จัดการสินค้า</h1>
     <div class="card mb-4">
-      <div class="card-header bg-success text-white">เพิ่มสินค้าใหม่</div>
+      <div class="card-header bg-danger text-white">เพิ่มสินค้าใหม่</div>
       <div class="card-body">
         <form action="/dashboard/add" method="post" enctype="multipart/form-data">
           <div class="row mb-3">
@@ -63,12 +138,10 @@
               <input type="number" step="0.01" name="price" class="form-control" required>
             </div>
           </div>
-
           <div class="mb-3">
             <label class="form-label">รายละเอียดสินค้า</label>
             <textarea name="description" class="form-control" rows="2"></textarea>
           </div>
-
           <div class="row mb-3">
             <div class="col-md-6">
               <label class="form-label">จำนวน</label>
@@ -79,79 +152,80 @@
               <input type="file" name="image" accept="image/*" class="form-control">
             </div>
           </div>
-
           <div class="text-end">
-            <button type="submit" class="btn btn-primary">เพิ่มสินค้า</button>
+            <button type="submit" class="btn btn-danger">เพิ่มสินค้า</button>
           </div>
         </form>
       </div>
     </div>
 
-    <!-- ตารางแสดงสินค้า -->
+    <!-- ตารางสินค้า -->
     <div class="card p-0 mb-4">
-    <div class="card-header bg-info text-white">รายการสินค้า</div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-        <table class="table table-bordered table-hover mb-0 text-center align-middle">
-            <thead class="table-light">
-            <tr>
-                <th>รูป</th>
-                <th>ชื่อ</th>
-                <th>รายละเอียด</th> <!-- ✅ เพิ่มหัวตารางรายละเอียด -->
-                <th>ราคา</th>
-                <th>จำนวน</th>
-                <th>ลบ</th>
-            </tr>
-            </thead>
-            <tbody>
-            <% products.forEach(product => { %>
-            <tr>
-                <td>
-                <% if (product.image) { %>
-                    <img src="<%= product.image %>" width="80" class="img-thumbnail">
-                <% } else { %>
-                    <span class="text-muted">ไม่มีรูป</span>
-                <% } %>
-                </td>
-                <td><%= product.product_name %></td>
-                <td class="text-start"><%= product.description %></td> <!-- ✅ เพิ่มรายละเอียด -->
-                <td>
-                <form class="d-flex flex-column gap-2" action="/dashboard/update-price/<%= product.product_id %>" method="post">
-                    <input type="number" step="0.01" name="price" value="<%= product.price %>" class="form-control">
-                    <button type="submit" class="btn btn-sm btn-outline-primary">แก้ไขราคา</button>
-                </form>
-                </td>
-                <td>
-                <form class="d-flex flex-column gap-2" action="/dashboard/update-quantity/<%= product.product_id %>" method="post">
-                    <input type="number" name="quantity" value="<%= product.quantity %>" class="form-control">
-                    <button type="submit" class="btn btn-sm btn-outline-warning">แก้ไขจำนวน</button>
-                </form>
-                </td>
-                <td>
-                <form action="/dashboard/delete/<%= product.product_id %>" method="post">
-                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('ยืนยันการลบสินค้า?')">ลบ</button>
-                </form>
-                </td>
-            </tr>
-            <% }) %>
-            </tbody>
-        </table>
-        </div>
-    </div>
-    </div>
-  </div>
-  <div class="container mt-5 pt-5" >
-    <h1 class="mb-4 text-left text-dark" id="manage-orders" >จัดการคำสั่งซื้อ</h1>
-    <div class="card p-0 mb-4">
-      <div class="card-header bg-warning text-white">รายการคำสั่งซื้อ</div>
+      <div class="card-header bg-white text-danger">รายการสินค้า</div>
       <div class="card-body p-0">
         <div class="table-responsive">
-          <table class="table table-bordered table-hover mb-0 text-center align-middle">
-            <thead class="table-light">
+          <table class="table table-hover mb-0 align-middle text-center">
+            <thead>
+              <tr>
+                <th>รูป</th>
+                <th>ชื่อ / รายละเอียด</th>
+                <th>ราคา</th>
+                <th>จำนวน</th>
+                <th>สถานะ</th>
+                <th>การจัดการ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% products.forEach(product => { %>
+              <tr>
+                <form action="/dashboard/update-product/<%= product.product_id %>" method="post" enctype="multipart/form-data">
+                  <td>
+                    <% if (product.image) { %>
+                      <img src="<%= product.image %>" width="80" class="rounded shadow-sm mb-2">
+                    <% } else { %>
+                      <span class="text-muted d-block mb-2">ไม่มีรูป</span>
+                    <% } %>
+                    <input type="file" name="image" class="form-control form-control-sm">
+                  </td>
+                  <td>
+                    <input type="text" name="name" value="<%= product.product_name %>" class="form-control mb-2" required>
+                    <textarea name="description" class="form-control" rows="2"><%= product.description %></textarea>
+                  </td>
+                  <td><input type="number" step="0.01" name="price" value="<%= product.price %>" class="form-control"></td>
+                  <td><input type="number" name="quantity" value="<%= product.quantity %>" class="form-control"></td>
+                  <td>
+                    <select name="is_active" class="form-select">
+                      <option value="1" <%= product.is_active === 1 ? 'selected' : '' %>>Active</option>
+                      <option value="0" <%= product.is_active === 0 ? 'selected' : '' %>>Inactive</option>
+                    </select>
+                  </td>
+                  <td class="d-flex flex-column gap-2">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">บันทึก</button>
+                    <form action="/dashboard/delete/<%= product.product_id %>" method="post">
+                      <button type="submit" class="btn btn-sm btn-outline-dark" onclick="return confirm('ยืนยันการลบสินค้า?')">ลบ</button>
+                    </form>
+                  </td>
+                </form>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- จัดการคำสั่งซื้อ -->
+    <h1 class="section-title" id="manage-orders">จัดการคำสั่งซื้อ</h1>
+    <div class="card p-0 mb-4">
+      <div class="card-header bg-white text-danger">รายการคำสั่งซื้อ</div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0 align-middle text-center">
+            <thead>
               <tr>
                 <th>รหัสคำสั่งซื้อ</th>
-                <th>ผู้สั่งซื้อ (User ID)</th>
-                <th>สินค้า (Product ID)</th>
+                <th>ผู้สั่งซื้อ</th>
+                <th>สินค้า</th>
                 <th>จำนวน</th>
                 <th>ราคา</th>
                 <th>สลีป</th>
@@ -161,51 +235,48 @@
                 <th>การจัดการ</th>
               </tr>
             </thead>
-              <tbody>
+            <tbody>
               <% orders.forEach(order => { %>
-                <tr>
-                  <td><%= order.order_id %></td>
-                  <td><%= order.user_id %></td>
-                  <td><%= order.product_id %></td>
-                  <td><%= order.quantity %></td>
-                  <td><%= order.price %> บาท</td>
-                  <td>
-                    <% if (order.slip_image) { %>
-                      <a href="<%= order.slip_image %>" target="_blank">
-                        <img src="<%= order.slip_image %>" width="80">
-                      </a>
-                    <% } else { %>
-                      <span class="text-muted">ไม่มีสลีป</span>
-                    <% } %>
-                  </td>
-                  <td>
-                    <form action="/dashboard/update-order-status/<%= order.order_id %>" method="post">
-                      <select name="status" onchange="this.form.submit()" class="form-select">
-                        <option value="กำลังตรวจสอบสลีป" <%= order.status === 'กำลังตรวจสอบสลีป' ? 'selected' : '' %>>กำลังตรวจสอบสลีป</option>
-                        <option value="ชำระเงินสำเร็จ" <%= order.status === 'ชำระเงินสำเร็จ' ? 'selected' : '' %>>ชำระเงินสำเร็จ</option>
-                        <option value="สินค้ากำลังจัดส่ง" <%= order.status === 'สินค้ากำลังจัดส่ง' ? 'selected' : '' %>>สินค้ากำลังจัดส่ง</option>
-                        <option value="จัดส่งสำเร็จ" <%= order.status === 'จัดส่งสำเร็จ' ? 'selected' : '' %>>จัดส่งสำเร็จ</option>
-                      </select>
-                    </form>
-                  </td>
-                  <td><%= order.created_at %></td>
-                  <td><%= order.updated_at %></td>
-                  <td>
-                    <form action="/dashboard/delete-order/<%= order.order_id %>" method="post">
-                      <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('ยืนยันการลบคำสั่งซื้อ?')">ลบ</button>
-                    </form>
-                  </td>
-                </tr>
+              <tr>
+                <td><%= order.order_id %></td>
+                <td><%= order.user_id %></td>
+                <td><%= order.product_id %></td>
+                <td><%= order.quantity %></td>
+                <td><%= order.price %> บาท</td>
+                <td>
+                  <% if (order.slip_image) { %>
+                    <a href="<%= order.slip_image %>" target="_blank">
+                      <img src="<%= order.slip_image %>" width="80" class="rounded shadow-sm">
+                    </a>
+                  <% } else { %>
+                    <span class="text-muted">ไม่มีสลีป</span>
+                  <% } %>
+                </td>
+                <td>
+                  <form action="/dashboard/update-order-status/<%= order.order_id %>" method="post">
+                    <select name="status" onchange="this.form.submit()" class="form-select">
+                      <option value="กำลังตรวจสอบสลีป" <%= order.status === 'กำลังตรวจสอบสลีป' ? 'selected' : '' %>>กำลังตรวจสอบสลีป</option>
+                      <option value="ชำระเงินสำเร็จ" <%= order.status === 'ชำระเงินสำเร็จ' ? 'selected' : '' %>>ชำระเงินสำเร็จ</option>
+                      <option value="สินค้ากำลังจัดส่ง" <%= order.status === 'สินค้ากำลังจัดส่ง' ? 'selected' : '' %>>สินค้ากำลังจัดส่ง</option>
+                      <option value="จัดส่งสำเร็จ" <%= order.status === 'จัดส่งสำเร็จ' ? 'selected' : '' %>>จัดส่งสำเร็จ</option>
+                    </select>
+                  </form>
+                </td>
+                <td><%= order.created_at %></td>
+                <td><%= order.updated_at %></td>
+                <td>
+                  <form action="/dashboard/delete-order/<%= order.order_id %>" method="post">
+                    <button type="submit" class="btn btn-sm btn-outline-dark" onclick="return confirm('ยืนยันการลบคำสั่งซื้อ?')">ลบ</button>
+                  </form>
+                </td>
+              </tr>
               <% }) %>
             </tbody>
-
           </table>
         </div>
       </div>
     </div>
   </div>
-
-
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
