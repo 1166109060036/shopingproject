@@ -14,25 +14,39 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+// ✅ เส้นทาง Checkout
 router.post('/checkout', upload.single('paymentSlip'), (req, res) => {
+  const userId = req.session.userId; 
   const productIds = Array.isArray(req.body.product_ids) ? req.body.product_ids : [req.body.product_ids];
   const quantities = Array.isArray(req.body.quantities) ? req.body.quantities : [req.body.quantities];
   const prices = Array.isArray(req.body.prices) ? req.body.prices : [req.body.prices];
   const cartIds = Array.isArray(req.body.cart_ids) ? req.body.cart_ids : [req.body.cart_ids];
-
-  const userId = req.session.userId; 
   const slipImage = req.file ? '/images/' + req.file.filename : null;
 
-  if (!productIds.length || !slipImage) {
-    return res.status(400).send('ข้อมูลไม่ครบ');
+  if (!userId) {
+    return res.status(401).send('❗ กรุณาเข้าสู่ระบบก่อนชำระเงิน');
+  }
+
+  if (!productIds.length) {
+    return res.status(400).send('❗ กรุณาเลือกสินค้าอย่างน้อย 1 รายการ');
+  }
+
+  if (!slipImage) {
+    return res.status(400).send('❗ กรุณาแนบสลิปการชำระเงิน');
   }
 
   let index = 0;
 
+  // ฟังก์ชันทำรายการแต่ละสินค้า
   function processNext() {
     if (index >= productIds.length) {
-      // ถ้าทำครบทุกสินค้าแล้ว ให้ redirect
-      return res.redirect('/products');
+      console.log('✅ สั่งซื้อสำเร็จทั้งหมด');
+      return res.send(`
+        <script>
+          alert('✅ ชำระเงินสำเร็จ ขอบคุณที่ใช้บริการ!');
+          window.location.href = '/myorders';
+        </script>
+      `);
     }
 
     const pid = productIds[index];
@@ -40,40 +54,40 @@ router.post('/checkout', upload.single('paymentSlip'), (req, res) => {
     const price = prices[index];
     const cartId = cartIds[index];
 
-    // 1. เพิ่มข้อมูลลง orders
+    // 1️⃣ บันทึกคำสั่งซื้อ
     db.query(
-      `INSERT INTO orders (user_id, product_id, quantity, price, slip_image, status)
-       VALUES (?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO orders (user_id, product_id, quantity, price, slip_image, status, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, NOW())`,
       [userId, pid, qty, price, slipImage, 'กำลังตรวจสอบสลีป'],
       (err) => {
         if (err) {
-          console.error('Insert order error:', err);
-          return res.status(500).send('เกิดข้อผิดพลาด');
+          console.error('❌ Insert order error:', err);
+          return res.status(500).send('เกิดข้อผิดพลาดในการสร้างคำสั่งซื้อ');
         }
 
-        // 2. ลดจำนวนสินค้า
+        // 2️⃣ ลดจำนวนสินค้า
         db.query(
-          `UPDATE products SET quantity = quantity - ? WHERE product_id = ? AND quantity >= ?`,
+          `UPDATE products 
+           SET quantity = quantity - ? 
+           WHERE product_id = ? AND quantity >= ?`,
           [qty, pid, qty],
           (err) => {
             if (err) {
-              console.error('Update quantity error:', err);
-              return res.status(500).send('เกิดข้อผิดพลาด');
+              console.error('❌ Update product error:', err);
+              return res.status(500).send('เกิดข้อผิดพลาดในการอัปเดตจำนวนสินค้า');
             }
 
-            // 3. ลบตะกร้าสินค้า
-            db.query(
-              `DELETE FROM carts WHERE cart_id = ?`,
-              [cartId],
-              (err) => {
-                if (err) {
-                  console.error('Delete cart error:', err);
-                  return res.status(500).send('เกิดข้อผิดพลาด');
-                }
-                index++;
-                processNext(); // ทำสินค้าต่อไป
+            // 3️⃣ ลบออกจากตะกร้า
+            db.query(`DELETE FROM carts WHERE cart_id = ?`, [cartId], (err) => {
+              if (err) {
+                console.error('❌ Delete cart error:', err);
+                return res.status(500).send('เกิดข้อผิดพลาดในการลบสินค้าออกจากตะกร้า');
               }
-            );
+
+              console.log(`🛒 ลบสินค้า cart_id=${cartId} เรียบร้อย`);
+              index++;
+              processNext();
+            });
           }
         );
       }
