@@ -56,35 +56,34 @@ router.post('/dashboard/delete/:id', function (req, res) {
   });
 });
 
-// ✅ แก้ไขชื่อสินค้า / รายละเอียด / รูป
+// ✅ แก้ไขข้อมูลสินค้า (ชื่อ, รายละเอียด, ราคา, จำนวน, รูป, สถานะ)
 router.post('/dashboard/update-product/:id', upload.single('image'), function (req, res) {
   const productId = req.params.id;
-  const { name, description } = req.body;
+  const { name, description, price, quantity, is_active } = req.body;
   const image = req.file ? '/images/' + req.file.filename : null;
 
+  let sql, params;
   if (image) {
-    // ถ้าอัปโหลดรูปใหม่
-    db.query(
-      'UPDATE products SET product_name = ?, description = ?, image = ? WHERE product_id = ?',
-      [name, description, image, productId],
-      (err) => {
-        if (err) throw err;
-        res.redirect('/dashboard');
-      }
-    );
+    sql = `
+      UPDATE products 
+      SET product_name = ?, description = ?, price = ?, quantity = ?, image = ?, is_active = ? 
+      WHERE product_id = ?
+    `;
+    params = [name, description, price, quantity, image, is_active, productId];
   } else {
-    // ถ้าไม่อัปโหลดรูปใหม่ → อัปเดตเฉพาะชื่อ/รายละเอียด
-    db.query(
-      'UPDATE products SET product_name = ?, description = ? WHERE product_id = ?',
-      [name, description, productId],
-      (err) => {
-        if (err) throw err;
-        res.redirect('/dashboard');
-      }
-    );
+    sql = `
+      UPDATE products 
+      SET product_name = ?, description = ?, price = ?, quantity = ?, is_active = ? 
+      WHERE product_id = ?
+    `;
+    params = [name, description, price, quantity, is_active, productId];
   }
-});
 
+  db.query(sql, params, (err) => {
+    if (err) throw err;
+    res.redirect('/dashboard');
+  });
+});
 
 // ✅ แก้ไขราคาสินค้า
 router.post('/dashboard/update-price/:id', function (req, res) {
@@ -136,6 +135,7 @@ router.post('/dashboard/update-order-status/:id', function (req, res) {
     db.query('UPDATE orders SET status = ? WHERE order_id = ?', [status, orderId], (err) => {
       if (err) throw err;
 
+      // ✅ เมื่อเปลี่ยนเป็น "ชำระเงินสำเร็จ" → ลดจำนวนสินค้าในสต็อก
       if (status === 'ชำระเงินสำเร็จ' && oldStatus !== 'ชำระเงินสำเร็จ') {
         db.query(
           'UPDATE products SET quantity = GREATEST(quantity - ?, 0) WHERE product_id = ?',
@@ -145,6 +145,18 @@ router.post('/dashboard/update-order-status/:id', function (req, res) {
             res.redirect('/dashboard');
           }
         );
+
+      // ✅ เมื่อเปลี่ยนเป็น "ชำระเงินไม่สำเร็จ" → เพิ่มจำนวนสินค้า (คืนสต็อก)
+      } else if (status === 'ชำระเงินไม่สำเร็จ' && oldStatus === 'กำลังตรวจสอบสลีป') {
+        db.query(
+          'UPDATE products SET quantity = quantity + ? WHERE product_id = ?',
+          [orderQty, productId],
+          (err) => {
+            if (err) throw err;
+            res.redirect('/dashboard');
+          }
+        );
+
       } else {
         res.redirect('/dashboard');
       }

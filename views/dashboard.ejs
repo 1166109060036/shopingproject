@@ -266,6 +266,7 @@
                   <form action="/dashboard/update-order-status/<%= order.order_id %>" method="post">
                     <select name="status" onchange="this.form.submit()" class="form-select">
                       <option value="กำลังตรวจสอบสลีป" <%= order.status === 'กำลังตรวจสอบสลีป' ? 'selected' : '' %>>กำลังตรวจสอบสลีป</option>
+                      <option value="ชำระเงินไม่สำเร็จ" <%= order.status === 'ชำระเงินไม่สำเร็จ' ? 'selected' : '' %>>ชำระเงินไม่สำเร็จ</option>
                       <option value="ชำระเงินสำเร็จ" <%= order.status === 'ชำระเงินสำเร็จ' ? 'selected' : '' %>>ชำระเงินสำเร็จ</option>
                       <option value="สินค้ากำลังจัดส่ง" <%= order.status === 'สินค้ากำลังจัดส่ง' ? 'selected' : '' %>>สินค้ากำลังจัดส่ง</option>
                       <option value="จัดส่งสำเร็จ" <%= order.status === 'จัดส่งสำเร็จ' ? 'selected' : '' %>>จัดส่งสำเร็จ</option>
