@@ -17,7 +17,6 @@
     .navbar {
       background: rgba(123, 0, 0, 0.805) !important;
       backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     }
     .navbar-nav .nav-link {
@@ -28,33 +27,9 @@
       color: #ffe6e6 !important;
     }
 
-    /* โลโก้ */
-    .navbar-brand img {
-      height: 40px;
-    }
-
-    /* ปุ่ม Logout */
-    #logout-button {
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.6);
-      border-radius: 12px;
-      backdrop-filter: blur(8px);
-    }
-    #logout-button:hover {
-      background: rgba(255, 255, 255, 0.8);
-      color: #a00000;
-    }
-
     /* Banner */
     .banner img {
       filter: brightness(0.65);
-    }
-    .banner h1, .banner p {
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 16px;
-      padding: 10px 20px;
     }
 
     /* Section Heading */
@@ -71,13 +46,41 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     }
 
+    /* กล่องค้นหา */
+    .search-bar {
+      max-width: 500px;
+      margin: 0 auto 30px auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    #searchBox {
+      flex: 1;
+      border-radius: 30px;
+      padding: 10px 20px;
+      border: 1px solid #ccc;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      font-size: 1rem;
+    }
+    #searchBtn {
+      border-radius: 30px;
+      background: #a00000;
+      color: white;
+      font-weight: 600;
+      border: none;
+      padding: 10px 25px;
+      transition: all 0.3s;
+    }
+    #searchBtn:hover {
+      background: #cc0000;
+    }
+
     /* Card */
     .card {
       border: none;
       border-radius: 20px;
       background: rgba(255, 255, 255, 0.45);
       backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
       box-shadow: 0 8px 24px rgba(0,0,0,0.15);
       transition: transform 0.3s, box-shadow 0.3s;
     }
@@ -85,6 +88,7 @@
       transform: translateY(-6px) scale(1.02);
       box-shadow: 0 12px 32px rgba(0,0,0,0.2);
     }
+
     .card-img-top {
       border-top-left-radius: 20px;
       border-top-right-radius: 20px;
@@ -92,27 +96,21 @@
       object-fit: cover;
     }
 
-    /* ปุ่ม */
-    .btn-outline-primary {
+    /* ข้อความไม่พบสินค้า */
+    #noResults {
+      display: none;
       color: #a00000;
-      border-color: #a00000;
+      font-weight: 600;
+      font-size: 1.2rem;
+      background: rgba(255,255,255,0.6);
+      padding: 15px 25px;
       border-radius: 12px;
-      backdrop-filter: blur(6px);
-    }
-    .btn-outline-primary:hover {
-      background: rgba(160, 0, 0, 0.8);
-      color: white;
-    }
-
-    .btn-secondary {
-      border-radius: 12px;
-      background: rgba(150,150,150,0.5);
-      color: white;
-      backdrop-filter: blur(6px);
-      border: none;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
   </style>
 </head>
+
 <body>
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg p-3 fixed-top">
@@ -132,9 +130,7 @@
 
         <div class="d-flex align-items-center">
           <span class="text-white me-3" id="user-email">Loading...</span>
-          <a href="/logout" class="btn" id="logout-button">
-            Logout
-          </a>
+          <a href="/logout" class="btn btn-outline-light rounded-pill px-3">Logout</a>
         </div>
       </div>
     </div>
@@ -155,9 +151,17 @@
   <div id="product-section" class="container mt-5 pt-5 text-center">
     <h2>เลือกสินค้าของคุณ</h2>
 
-    <div class="row g-4 mt-4">
+    <!-- 🔍 ช่องค้นหาสินค้า -->
+    <div class="search-bar">
+      <input type="text" id="searchBox" placeholder="🔍 พิมพ์ชื่อสินค้า...">
+      <button id="searchBtn">ค้นหา</button>
+    </div>
+
+    <div id="noResults">❌ ไม่พบสินค้าที่ค้นหา</div>
+
+    <div id="product-list" class="row g-4 mt-4">
       <% products.forEach(product => { %>
-        <div class="col-md-4 col-sm-6">
+        <div class="col-md-4 col-sm-6 product-card">
           <div class="card h-100">
             <% if (product.image) { %>
               <img src="<%= product.image %>" class="card-img-top" alt="Product Image">
@@ -168,7 +172,7 @@
             <% } %>
 
             <div class="card-body d-flex flex-column">
-              <h5 class="card-title fw-bold"><%= product.product_name %></h5>
+              <h5 class="card-title fw-bold product-name"><%= product.product_name %></h5>
               <p class="card-text text-muted"><%= product.description %></p>
               <p class="text-danger fw-bold mb-1">฿ <%= product.price %></p>
               <p class="<%= product.quantity > 0 ? 'text-success' : 'text-danger' %> mb-3">
@@ -191,6 +195,10 @@
     document.addEventListener("DOMContentLoaded", () => {
       const userId = localStorage.getItem('userId');
       const userRole = localStorage.getItem('userRole');
+      const searchBox = document.getElementById('searchBox');
+      const searchBtn = document.getElementById('searchBtn');
+      const productCards = document.querySelectorAll('.product-card');
+      const noResults = document.getElementById('noResults');
 
       if (userRole === 'admin') {
         document.getElementById('dashboard-link').style.display = 'inline';
@@ -212,6 +220,28 @@
       })
       .catch(() => {
         document.getElementById('user-email').textContent = "โหลดอีเมลไม่สำเร็จ";
+      });
+
+      // 🔍 ระบบค้นหาสินค้าแบบกดปุ่มหรือกด Enter
+      function searchProducts() {
+        const keyword = searchBox.value.trim().toLowerCase();
+        let found = 0;
+        productCards.forEach(card => {
+          const name = card.querySelector('.product-name').textContent.toLowerCase();
+          if (name.includes(keyword) || keyword === '') {
+            card.style.display = '';
+            found++;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+
+        noResults.style.display = found === 0 ? 'block' : 'none';
+      }
+
+      searchBtn.addEventListener('click', searchProducts);
+      searchBox.addEventListener('keypress', e => {
+        if (e.key === 'Enter') searchProducts();
       });
     });
   </script>
